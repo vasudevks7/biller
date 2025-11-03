@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Bill</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #0b6cf0;
+      --bg: #f4f6f8;
+      --card: #fff;
+      --text: #111827;
+      --border: #e5e7eb;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .container {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      max-width: 950px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-size: 15px;
+      transition: border 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(11, 108, 240, 0.15);
+    }
+
+    #suggestions {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: -8px;
+      margin-bottom: 10px;
+    }
+
+    #suggestions div {
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    #suggestions div:hover {
+      background: #eef4ff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .add-btn {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+    }
+
+    .add-btn:hover {
+      background: #095ad1;
+    }
+
+    .save-btn {
+      background: var(--success);
+      color: white;
+      margin-top: 14px;
+      width: 100%;
+    }
+
+    .save-btn:hover {
+      background: #15803d;
+    }
+
+    .summary {
+      text-align: right;
+      margin-top: 14px;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .summary div {
+      margin: 6px 0;
+      font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 14px;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th {
+        display: none;
+      }
+      tr {
+        margin-bottom: 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px;
+      }
+      td {
+        border: none;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 4px;
+      }
+      td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #374151;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🧾 Create New Bill</h2>
+
+    <label>Customer Name:</label>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <input type="text" id="customer_name" placeholder="Enter customer name" oninput="searchCustomer()" style="flex:1;">
+      <button onclick="window.location.href='/new-customer'" 
+              style="padding:8px 10px;background:#0b6cf0;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;">
+        + New Customer
+      </button>
+
+    </div>
+    <div id="suggestions"></div>
+
+
+    <label>Address:</label>
+    <input type="text" id="address" placeholder="Address">
+
+    <label>Phone:</label>
+    <input type="text" id="phone" placeholder="Phone Number">
+
+    <label>GST:</label>
+    <input type="text" id="gst" placeholder="GST Number">
+
+    <label>State:</label>
+    <input type="text" id="state" placeholder="State">
+
+    <label>Date:</label>
+    <input type="date" id="date">
+
+    <label>Invoice Number:</label>
+    <input type="text" id="invoice_number" placeholder="001">
+
+    <label>Tax Type:</label>
+    <select id="tax_type" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;margin-bottom:14px;">
+      <option value="IGST">IGST</option>
+      <option value="CGST/SGST">CGST/SGST</option>
+    </select>
+
+
+    <h3>Items</h3>
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>HSN</th>
+          <th>Qty</th>
+          <th>Rate</th>
+          <th>Tax %</th>
+          <th>Tax (₹)</th>
+          <th>Total (with Tax)</th>
+          <th>Action</th>
+
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button class="add-btn" onclick="addRow()">+ Add Item</button>
+    
+    <div class="summary">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <input type="text" id="extra_title" placeholder="Charge Title (Delivery/Packing etc)" 
+                style="width: 65%; padding: 8px; border: 1px solid var(--border); border-radius: 8px;">
+          <input type="number" id="extra_amount" value="0" step="0.01" 
+                oninput="refresh()" 
+                style="width: 30%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; text-align:right;">
+      </div>
+
+        <div>Subtotal: ₹<span id="subtotal">0.00</span></div>
+        <div>Total Tax: ₹<span id="totalTax">0.00</span></div>
+        <div>Extra Charge: ₹<span id="showExtra">0.00</span></div>
+        <div><strong>Grand Total: ₹<span id="grandTotal">0.00</span></strong></div>
+    </div>
+
+
+    <button class="save-btn" onclick="saveBill()">💾 Save Bill</button>
+  </div>
+
+  <!-- ✅ existing script untouched -->
+  <script>
+    const tbody = document.querySelector('#itemsTable tbody');
+
+    function addRow(prefill) {
+      const taxDefault = (prefill && prefill.tax !== undefined) ? prefill.tax : 18;
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td data-label="Item Name"><input class="iname" type="text" value="${prefill ? prefill.name : ''}" placeholder="Item name"></td>
+        <td data-label="HSN"><input class="ihsn" type="text" value="${prefill ? prefill.hsn || '' : ''}" placeholder="HSN Code"></td>
+        <td data-label="Qty"><input class="iqty" type="number" min="0" step="1" value="${prefill ? prefill.qty : 1}" onchange="refresh()"></td>
+        <td data-label="Rate"><input class="irate" type="number" min="0" step="0.01" value="${prefill ? prefill.rate : 0}" onchange="refresh()"></td>
+        <td data-label="Tax %"><input class="itaxp" type="number" min="0" step="0.01" value="${taxDefault}" onchange="refresh()"></td>
+        <td data-label="Tax (₹)" class="itax">0.00</td>
+        <td data-label="Total (with Tax)" class="itotal">0.00</td>
+        <td><button style="background-color:red;color:white;padding:8px" onclick="removeRow(this)">Delete</button></td>
+      `;
+
+      tbody.appendChild(row);
+      refresh();
+    }
+
+    function removeRow(btn) { btn.closest('tr').remove(); refresh(); }
+
+    function refresh() {
+      let subtotal = 0, totalTax = 0;
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const qty = parseFloat(tr.querySelector('.iqty').value) || 0;
+        const rate = parseFloat(tr.querySelector('.irate').value) || 0;
+        const taxp = parseFloat(tr.querySelector('.itaxp').value) || 0;
+        const itemSub = qty * rate;
+        const itemTax = itemSub * (taxp / 100);
+        const itemTotal = itemSub + itemTax;
+
+        tr.querySelector('.itax').textContent = itemTax.toFixed(2);
+        tr.querySelector('.itotal').textContent = itemTotal.toFixed(2);
+
+        subtotal += itemSub;
+        totalTax += itemTax;
+      });
+
+      const extraAmount = parseFloat(document.getElementById('extra_amount').value) || 0;
+
+      document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+      document.getElementById('totalTax').textContent = totalTax.toFixed(2);
+      document.getElementById('showExtra').textContent = extraAmount.toFixed(2);
+
+      document.getElementById('grandTotal').textContent = (subtotal + totalTax + extraAmount).toFixed(2);
+    }
+
+
+    function gatherItems() {
+      const items = [];
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const name = tr.querySelector('.iname').value || '';
+        const hsn = tr.querySelector('.ihsn').value || '';
+        const qty = parseFloat(tr.querySelector('.iqty').value) || 0;
+        const rate = parseFloat(tr.querySelector('.irate').value) || 0;
+        const taxp = parseFloat(tr.querySelector('.itaxp').value) || 0;
+
+        const itemSub = qty * rate;
+        const itemTax = itemSub * (taxp / 100);
+        const itemTotal = itemSub + itemTax;
+
+        // Only add valid rows
+        if (name && qty > 0 && rate >= 0) {
+          items.push({
+            name,
+            hsn,
+            qty,
+            rate,
+            taxp,
+            tax: Number(itemTax.toFixed(2)),
+            total: Number(itemTotal.toFixed(2))
+          });
+        }
+      });
+      return items;
+    }
+
+
+    async function saveBill() {
+      const items = gatherItems();
+      if (!items.length) { alert('Add at least one item'); return; }
+      const payload = {
+        date: document.getElementById('date').value,
+        invoice_number: document.getElementById('invoice_number').value,
+        customer_name: document.getElementById('customer_name').value,
+        grand_total: Number(document.getElementById('grandTotal').textContent || 0),
+        extra_title: document.getElementById('extra_title').value || '',
+        extra_amount: Number(document.getElementById('extra_amount').value || 0),
+        tax_type: document.getElementById('tax_type').value,
+        items
+      };
+
+
+      const res = await fetch('/save-bill', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const j = await res.json();
+      alert(j.message || 'Saved');
+      window.location.href = '/history';
+    }
+
+    addRow();
+
+    async function searchCustomer() {
+      const query = document.getElementById("customer_name").value;
+      const suggestions = document.getElementById("suggestions");
+      if (!query) { suggestions.innerHTML = ""; return; }
+      const res = await fetch(`/search-customer?q=${query}`);
+      const data = await res.json();
+      suggestions.innerHTML = data.map(name =>
+        `<div onclick="selectCustomer('${name}')">${name}</div>`
+      ).join('');
+    }
+
+    async function selectCustomer(name) {
+      document.getElementById("customer_name").value = name;
+      document.getElementById("suggestions").innerHTML = "";
+      const res = await fetch(`/get-customer-details?name=${name}`);
+      const data = await res.json();
+      document.getElementById("address").value = data.address || '';
+      document.getElementById("phone").value = data.phone || '';
+      document.getElementById("gst").value = data.gst || '';
+      document.getElementById("state").value = data.state || '';
+    }
+  </script>
+</body>
+</html>

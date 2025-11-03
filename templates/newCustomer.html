@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add New Customer — Billing App</title>
+  <style>
+    :root {
+      --accent: #0b6cf0;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --text-dark: #0f172a;
+      --border: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card);
+      width: 100%;
+      max-width: 480px;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(11, 108, 240, 0.15);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #084ec0;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 18px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      input, button {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Add New Customer</h1>
+
+    <form method="POST">
+      <label>Name:</label>
+      <input type="text" name="name" required>
+
+      <label>Phone:</label>
+      <input type="text" name="phone">
+
+      <label>Address:</label>
+      <input type="text" name="address">
+
+      <label>GST Number:</label>
+      <input type="text" name="gst" required>
+
+      <label>State:</label>
+      <input type="text" name="state">
+
+      <button type="submit">Save</button>
+    </form>
+
+    <a href="/">Back to Home</a>
+  </div>
+
+  <script>
+    function saveCustomer() {
+      const name = document.getElementById('custName').value.trim();
+      const addr = document.getElementById('custAddress').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const gst = document.getElementById('custGST').value.trim();
+      const state = document.getElementById('custState').value.trim();
+
+      if (!name) {
+        alert('Please enter customer name');
+        return;
+      }
+
+      const newCustomer = { name, addr, phone, gst, state };
+      const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+      customers.push(newCustomer);
+      localStorage.setItem('customers', JSON.stringify(customers));
+
+      alert('Customer saved successfully!');
+      window.location.href = 'new-bill.html';
+    }
+
+    function goBack() {
+      window.location.href = 'new-bill.html';
+    }
+  </script>
+</body>
+</html>

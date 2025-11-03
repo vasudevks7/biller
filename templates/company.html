@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Details</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --success: #10b981;
+      --bg: #f3f4f6;
+      --card: #fff;
+      --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+    .info p { margin: 8px 0; line-height: 1.4; }
+    label { display: block; margin-top: 10px; font-weight: 600; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      margin-top: 5px;
+    }
+    textarea { resize: vertical; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+    .edit-btn { background: var(--accent); color: #fff; }
+    .save-btn { background: var(--success); color: #fff; }
+    .back-btn { background: #e5e7eb; color: #111827; }
+    .hidden { display: none; }
+    .logo-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 15px 0;
+    }
+    .logo-preview img {
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid #e5e7eb;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 16px; border-radius: 12px; }
+      h2 { font-size: 1.3rem; }
+      input, textarea { font-size: 14px; }
+      .btn { font-size: 14px; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🏢 Company Details</h2>
+
+    <button class="btn back-btn" onclick="window.location.href='/'">← Back to Home</button>
+
+    {% if company %}
+    <div id="displayView">
+      <div class="logo-preview">
+        {% if company['logo'] %}
+          <img src="{{ url_for('static', filename='uploads/' + company['logo']) }}" alt="Logo" id="logoDisplay">
+        {% else %}
+          <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Logo" id="logoDisplay">
+        {% endif %}
+      </div>
+      <div class="info">
+        <p><b>Name:</b> {{ company['name'] or 'N/A' }}</p>
+        <p><b>Address:</b> {{ company['address'] or 'N/A' }}</p>
+        <p><b>Phone:</b> {{ company['phone'] or 'N/A' }}</p>
+        <p><b>GST:</b> {{ company['gst'] or 'N/A' }}</p>
+        <p><b>State:</b> {{ company['state'] or 'N/A' }}</p>
+        <p><b>Bank Name:</b> {{ company['bank_name'] or 'N/A' }}</p>
+        <p><b>IFSC:</b> {{ company['ifsc'] or 'N/A' }}</p>
+        <p><b>Account Number:</b> {{ company['account_number'] or 'N/A' }}</p>
+        <p><b>Account Holder Name:</b> {{ company['account_name'] or 'N/A' }}</p>
+      
+
+         <p><b>Signature:</b>
+               <div class="signature-preview">
+                {% if company and company['signature'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + company['signature']) }}" 
+                        alt="Signature" id="signatureDisplay" 
+                        style="width: 100px; height: 50px; object-fit: contain; border: 1px solid #ccc; border-radius: 4px;">
+                {% else %}
+                    <img src="{{ url_for('static', filename='uploads/default_signature.png') }}" 
+                        alt="Signature" id="signatureDisplay" 
+                        style="width: 100px; height: 50px; object-fit: contain; border: 1px solid #ccc; border-radius: 4px;">
+                {% endif %}
+            </div>
+         </p>
+      </div>
+
+
+      <button class="btn edit-btn" onclick="toggleEdit(true)">✏️ Edit</button>
+    </div>
+    {% endif %}
+
+    <div id="editView" class="{% if company %}hidden{% endif %}">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="logo-preview">
+          <img id="logoPreview" src="{% if company and company['logo'] %}{{ url_for('static', filename='uploads/' + company['logo']) }}{% else %}{{ url_for('static', filename='uploads/default.png') }}{% endif %}" alt="Logo">
+        </div>
+
+        <label>Upload Logo:</label>
+        <input type="file" name="logo_file" accept="image/*" onchange="previewLogo(event)">
+
+        <label>Company Name:</label>
+        <input type="text" name="name" value="{{ company['name'] if company else '' }}" required>
+
+        <label>Address:</label>
+        <textarea name="address">{{ company['address'] if company else '' }}</textarea>
+
+        <label>Phone:</label>
+        <input type="text" name="phone" value="{{ company['phone'] if company else '' }}">
+
+        <label>GST:</label>
+        <input type="text" name="gst" value="{{ company['gst'] if company else '' }}">
+
+        <label>State:</label>
+        <input type="text" name="state" value="{{ company['state'] if company else '' }}">
+
+        <label>Bank Name:</label>
+        <input type="text" name="bank_name" value="{{ company['bank_name'] if company else '' }}">
+
+        <label>IFSC Code:</label>
+        <input type="text" name="ifsc" value="{{ company['ifsc'] if company else '' }}">
+
+        <label>Account Number:</label>
+        <input type="text" name="account_number" value="{{ company['account_number'] if company else '' }}">
+
+        <label>Account Holder Name:</label>
+        <input type="text" name="account_name" value="{{ company['account_name'] if company else '' }}">
+
+        <label>Upload Digital Signature:</label>
+        <input type="file" name="signature_file" accept="image/*" onchange="previewSignature(event)">
+
+        <div class="logo-preview">
+            <img id="signaturePreview" src="{% if company and company['signature'] %}
+                {{ url_for('static', filename='uploads/' + company['signature']) }}
+            {% else %}
+                {{ url_for('static', filename='uploads/default-signature.png') }}
+            {% endif %}" alt="Signature" style="width:120px;height:80px;border:2px solid #ddd;border-radius:8px;">
+        </div>
+
+        <button type="submit" class="btn save-btn">💾 Save Details</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function toggleEdit(show) {
+      document.getElementById('displayView').classList.toggle('hidden', show);
+      document.getElementById('editView').classList.toggle('hidden', !show);
+    }
+
+    function previewLogo(event) {
+      const img = document.getElementById('logoPreview');
+      img.src = URL.createObjectURL(event.target.files[0]);
+    }
+
+    function previewSignature(event) {
+        const img = document.getElementById('signaturePreview');
+        img.src = URL.createObjectURL(event.target.files[0]);
+    }
+  </script>
+</body>
+</html>

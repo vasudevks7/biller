@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Billing App — Home</title>
+  <style>
+    :root{
+      --accent:#0b6cf0;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --bg:#f3f4f6;
+      --shadow: 0 6px 18px rgba(13,18,25,0.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{background:var(--bg);color:#0f172a;padding:16px}
+
+    /* container */
+    .app{
+      max-width:1100px;margin:0 auto;display:flex;gap:16px;align-items:flex-start
+    }
+
+    /* mobile-first layout */
+    .main{
+      width:100%;
+    }
+
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:44px;height:44px;background-image: url("logo.png");border-radius:10px;display:grid; background-size: cover;}
+    h1{font-size:16px;margin:0}
+    p.subtitle{margin:0;font-size:12px;color:var(--muted)}
+
+    /* top stats */
+    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .card {background: var(--card); padding: 6px; padding-bottom: 12px; border-radius: 12px; box-shadow: var(--shadow);flex: 1; min-width: 120px;align-items:center;display:flex;flex-direction:column;cursor:pointer}
+
+    .big{font-size:40px;font-weight:700}
+    .muted{font-size:12px;color:var(--muted)}
+    .blue{color:white;background-color:#095ad1}
+    .new{font-size:12px;color:white}
+
+    /* quick actions */
+    .actions{display:flex;gap:8px;margin-bottom:12px}
+    .btn{flex:1;padding:12px;border-radius:10px;text-align:center;font-weight:600;background:linear-gradient(90deg,var(--accent),#2ea6ff);color:white;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(11,108,240,0.12)}
+
+    /* list */
+    .list{display:grid;gap:15px}
+    .list a{display:flex;justify-content:space-between;align-items:center;padding:15px;border-radius:10px;background:var(--card);text-decoration:none;color:inherit;box-shadow:var(--shadow)}
+
+    footer.mobile-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 32px);max-width:720px;display:flex;gap:8px}
+    .nav-btn{flex:1;padding:12px;border-radius:12px;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--shadow);font-size:12px}
+
+    /* desktop sidebar */
+    .sidebar{display:none;min-width:220px}
+    .sidebar .menu-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;color:var(--muted);text-decoration:none}
+    .sidebar .menu-item.active{background:var(--card);box-shadow:var(--shadow);color:var(--accent);font-weight:600}
+
+    /* settings 3dot */
+    .dots{background:transparent;border:none;font-size:20px;cursor:pointer}
+    .dropdown{position:absolute;right:14px;top:60px;background:white;border-radius:8px;box-shadow:var(--shadow);padding:8px;display:none}
+    .dropdown a{display:block;padding:8px;border-radius:6px;text-decoration:none;color:#0f172a}
+
+    /* responsive rules for larger screens */
+    @media(min-width:900px){
+      body{padding:24px}
+      .app{align-items:flex-start}
+      .sidebar{display:block}
+      .main{flex:1}
+      footer.mobile-nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div style="margin-bottom:10px">
+        <div class="logo" style="background-image: url('{{ logo }}'); background-size: cover; background-position: center;"></div>
+      </div>
+      <nav>
+        <a class="menu-item active" href="#">🏠 Dashboard</a>
+        <a class="menu-item" href="/new-bill">➕ New Bill</a>
+        <a class="menu-item" href="/new-customer">➕ New Customers</a>
+        <a class="menu-item" href="/history">📜 History</a>
+        <a class="menu-item" href="#about">ℹ️ About Us</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header>
+        <div class="brand">
+          <div class="logo" style="background-image: url('{{ logo }}'); background-size: cover; background-position: center;"></div>
+          <div>
+            <h1>Billing Dashboard</h1>
+            <p class="subtitle">Quick overview</p>
+          </div>
+        </div>
+        <div style="position:relative">
+          <button class="dots" id="dotsBtn">⋯</button>
+          <div class="dropdown" id="dropdown">
+            <a href="/company">Your Info</a>
+            <a href="/about">About Us</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- stats -->
+      <!-- stats -->
+      <section class="stats">
+        <div class="card blue" onclick="window.location.href='/new-bill'">
+          <div class="big">+</div>
+          <div class="new">New Bill</div>
+        </div>
+
+        <div class="card">
+          <div class="big">{{ bills_count }}</div>
+          <div class="muted">Bills in this month</div>
+        </div>
+
+        <div class="card">
+          <div class="big">{{ last_invoice }}</div>
+          <div class="muted">Last invoice</div>
+        </div>
+      </section>
+
+
+      
+
+      <!-- list of shortcuts -->
+      <section class="list">
+        <a href="/history">
+          <div>
+            <div style="font-weight:700">Sailes details</div>
+            <div class="muted">View and manage all sales records</div>
+          </div>
+          <div>›</div>
+        </a>
+
+        <a href="/customers">
+          <div>
+            <div style="font-weight:700">Customer details</div>
+            <div class="muted">Add or search customers</div>
+          </div>
+          <div>›</div>
+        </a>
+
+        <a href="/company">
+          <div>
+            <div style="font-weight:700">Company Details</div>
+            <div class="muted">Manage company information</div>
+          </div>
+          <div>›</div>
+        </a>
+
+
+        <a href="/about">
+          <div>
+            <div style="font-weight:700">About us</div>
+            <div class="muted">App info and Maker</div>
+          </div>
+          <div>›</div>
+        </a>
+      </section>
+
+      <!-- placeholder area for larger screens -->
+      <div style="height:24px"></div>
+    </main>
+  </div>
+
+  <!-- bottom mobile nav -->
+  <footer class="mobile-nav">
+    
+    <button class="nav-btn" onclick="window.location.href='/new-bill'">➕
+      <div style="font-size:11px">New Bill</div>
+    </button>
+    <button class="nav-btn" onclick="window.location.href='/new-customer'">➕
+      <div style="font-size:11px">New Customer</div>
+    </button>
+    <button class="nav-btn" onclick="window.location.href='/history'">🧾
+      <div style="font-size:11px">Bills</div>
+    </button>
+    <button class="nav-btn" onclick="window.location.href='/customers'">👥
+      <div style="font-size:11px">Customers</div>
+    </button>
+  </footer>
+
+  <script>
+    
+    // dropdown toggle
+    const dotsBtn = document.getElementById('dotsBtn');
+    const dropdown = document.getElementById('dropdown');
+    dotsBtn.addEventListener('click', (e)=>{
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    // close dropdown when clicking outside
+    window.addEventListener('click', (e)=>{
+      if(!dotsBtn.contains(e.target) && !dropdown.contains(e.target)) dropdown.style.display = 'none';
+    });
+
+    // wire buttons to hash navigation (placeholder)
+    document.getElementById('newBillBtn').addEventListener('click', ()=> location.hash = '#new-bill');
+    document.getElementById('historyBtn').addEventListener('click', ()=> location.hash = '#history');
+    document.getElementById('newBillMobile').addEventListener('click', ()=> location.hash = '#new-bill');
+    document.getElementById('historyMobile').addEventListener('click', ()=> location.hash = '#history');
+  </script>
+</body>
+</html>
