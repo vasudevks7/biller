@@ -389,10 +389,11 @@
           {% for item in items %}
             {% set qty = item['qty'] | float %}
             {% set rate = item['rate'] | float %}
-            {% set taxp = item['taxp'] | float if item['taxp'] else 18 %}
+            {% set taxp = 18 %}
             {% set item_sub = qty * rate %}
             {% set tax = item_sub * taxp / 100 %}
             {% set total = item_sub + tax %}
+
             {% set subtotal = subtotal + item_sub %}
             {% set totaltax = totaltax + tax %}
             <tr>

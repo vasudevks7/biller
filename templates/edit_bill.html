@@ -216,19 +216,20 @@
       tbody.querySelectorAll('tr').forEach(tr => {
         const name = tr.querySelector('.iname').value || '';
         const hsn = tr.querySelector('.ihsn').value || '';
-        items.push({ name, hsn, qty, rate, taxp, tax: itemTax, total: itemTotal });
         const qty = parseFloat(tr.querySelector('.iqty').value) || 0;
         const rate = parseFloat(tr.querySelector('.irate').value) || 0;
         const taxp = parseFloat(tr.querySelector('.itaxp').value) || 0;
         const itemSub = qty * rate;
         const itemTax = itemSub * (taxp / 100);
         const itemTotal = itemSub + itemTax;
+
         if (name && qty > 0 && rate >= 0) {
-          items.push({ name, qty, rate, taxp, tax: itemTax, total: itemTotal });
+          items.push({ name, hsn, qty, rate, taxp, tax: itemTax, total: itemTotal });
         }
       });
       return items;
     }
+
 
     const billData = {{ bill|tojson }};
     const items = {{ items|tojson }};
