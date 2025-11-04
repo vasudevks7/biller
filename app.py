@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for
-import sqlite3
+from flask import Flask, render_template, request, redirect, jsonify, url_for # type: ignore
 import os
+import sqlite3
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -8,7 +8,8 @@ app.config['DEBUG'] = True
 # -------------------------------
 # Database Path (✅ Works on Windows & Vercel)
 # -------------------------------
-DB_PATH = os.path.join(os.path.dirname(__file__), "database.db")
+
+DB_PATH = os.path.join("/tmp", "database.db")
 
 # -------------------------------
 # Initialize Database
@@ -16,6 +17,7 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "database.db")
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
+
     cursor = conn.cursor()
 
     # Users Table
@@ -402,8 +404,13 @@ def company():
         account_name = request.form.get('account_name')
 
         # File uploads
-        upload_dir = os.path.join(app.static_folder, 'uploads')
+        if os.environ.get("VERCEL_ENV"):
+            upload_dir = "/tmp/uploads"
+        else:
+            upload_dir = os.path.join(app.static_folder, "uploads")
+
         os.makedirs(upload_dir, exist_ok=True)
+
 
         logo_filename = None
         signature_filename = None
@@ -465,6 +472,12 @@ def company():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
 
 # -------------------------------
 # Run App
